@@ -31,7 +31,7 @@ startProcess(diawiToken) async {
     var diawiStatusResponse;
     do {
       await Future.delayed(Duration(seconds: 2));
-      diawiStatusResponse = await checkDiawiStatus(jobId);
+      diawiStatusResponse = await checkDiawiStatus(jobId, diawiToken);
       print('Diawi Status Response: $diawiStatusResponse');
     } while (diawiStatusResponse['status'] != 2000);
   } catch (e) {
@@ -63,7 +63,6 @@ Future<void> buildApk() async {
 }
 
 Future<Map<String, dynamic>> uploadToDiawi(diawiToken) async {
-  diawiToken = diawiToken.trim();
   print('Your Diawi Token: $diawiToken');
   print('Uploading APK to Diawi... 🚀');
   var diawiUploadUrl = 'https://upload.diawi.com/';
@@ -83,10 +82,10 @@ Future<Map<String, dynamic>> uploadToDiawi(diawiToken) async {
   return json.decode(responseString);
 }
 
-Future<Map<String, dynamic>> checkDiawiStatus(String jobId) async {
+Future<Map<String, dynamic>> checkDiawiStatus(String jobId, diawiToken) async {
   print('Checking Diawi Status... 🕵️‍♂️');
   var diawiStatusUrl =
-      'https://upload.diawi.com/status?token=6rTDnqLWVfRM5Izlx74Rql58Qzd3wdmXg1xjGTNtji&job=$jobId';
+      'https://upload.diawi.com/status?token=$diawiToken&job=$jobId';
 
   var response = await http.get(Uri.parse(diawiStatusUrl));
 
