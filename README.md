@@ -2,7 +2,7 @@
 
 ## Overview
 
-This script automates the process of building and uploading Flutter APKs and IPA files to Diawi.
+This script automates the process of building and uploading Flutter APK and IPA files to Diawi.
 
 ## Prerequisites
 
