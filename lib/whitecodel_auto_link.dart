@@ -55,11 +55,17 @@ Future<void> buildApk() async {
 }
 
 Future<Map<String, dynamic>> uploadToDiawi() async {
+  // ask for token
+  print(
+      'To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api');
+  stdout.write('Enter your Diawi token: ');
+  String diawiToken = stdin.readLineSync() ?? '';
+
   print('Uploading APK to Diawi... 🚀');
   var diawiUploadUrl = 'https://upload.diawi.com/';
 
   var request = http.MultipartRequest('POST', Uri.parse(diawiUploadUrl))
-    ..fields['token'] = '6rTDnqLWVfRM5Izlx74Rql58Qzd3wdmXg1xjGTNtji'
+    ..fields['token'] = diawiToken
     ..fields['callback_emails'] = 'bhawanishankar1308@gmail.com'
     ..files.add(await http.MultipartFile.fromPath(
         'file', 'build/app/outputs/apk/release/app-release.apk'));
