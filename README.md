@@ -2,11 +2,7 @@
 
 ## Overview
 
-This script automates the process of building and uploading Flutter APKs to Diawi for distribution.
-
-## Future Scope
-
-- Support for iOS (IPA)
+This script automates the process of building and uploading Flutter APKs and IPA files to Diawi.
 
 ## Prerequisites
 
@@ -19,13 +15,23 @@ Before using this script, make sure you have the following:
 ## Usage
 
 ```bash
-whitecodel_auto_link <token>
+whitecodel_auto_link <token> <buildType> <releaseType>
 ```
+
+## Default Values
+
+- If `buildType` is not provided, it defaults to `both`.
+- If `releaseType` is not provided, it defaults to `debug`.
 
 ## Example
 
 ```bash
-whitecodel_auto_link abcdef123456789
+whitecodel_auto_link abcdef123456789 apk release
+whitecodel_auto_link abcdef123456789 ipa release
+whitecodel_auto_link abcdef123456789 both release
+whitecodel_auto_link abcdef123456789 apk debug
+whitecodel_auto_link abcdef123456789 ipa debug
+whitecodel_auto_link abcdef123456789 both debug
 ```
 
 ## Author
