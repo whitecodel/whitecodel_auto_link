@@ -4,6 +4,10 @@
 
 This script automates the process of building and uploading Flutter APKs to Diawi for distribution.
 
+## Future Scope
+
+- Support for iOS (IPA)
+
 ## Prerequisites
 
 Before using this script, make sure you have the following:
