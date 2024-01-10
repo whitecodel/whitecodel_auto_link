@@ -2,17 +2,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-void main() async {
-  startProcess();
+void main(List<String> arguments) {
+  if (arguments.isEmpty) {
+    print('Please provide the token like this: whitecodel_auto_link <token>');
+    print(
+        'To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api');
+
+    return;
+  }
+  print('Starting Whitecodel Auto Link... 🚀');
+  startProcess(arguments[0]);
 }
 
-startProcess() async {
+startProcess(diawiToken) async {
   try {
     // Step 1: Build APK
-    await buildApk();
+    // await buildApk();
 
     // Step 2: Upload APK to Diawi
-    var diawiUploadResponse = await uploadToDiawi();
+    var diawiUploadResponse = await uploadToDiawi(diawiToken);
 
     print('Diawi Upload Response: $diawiUploadResponse');
 
@@ -54,13 +62,7 @@ Future<void> buildApk() async {
   print('APK Build Completed Successfully');
 }
 
-Future<Map<String, dynamic>> uploadToDiawi() async {
-  // ask for token
-  print(
-      'To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api');
-  stdout.write('Enter your Diawi token: ');
-  String diawiToken = stdin.readLineSync() ?? '';
-
+Future<Map<String, dynamic>> uploadToDiawi(diawiToken) async {
   print('Uploading APK to Diawi... 🚀');
   var diawiUploadUrl = 'https://upload.diawi.com/';
 
