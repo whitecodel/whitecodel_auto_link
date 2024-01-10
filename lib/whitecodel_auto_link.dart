@@ -17,7 +17,7 @@ void main(List<String> arguments) {
 startProcess(diawiToken) async {
   try {
     // Step 1: Build APK
-    // await buildApk();
+    await buildApk();
 
     // Step 2: Upload APK to Diawi
     var diawiUploadResponse = await uploadToDiawi(diawiToken);
