@@ -26,7 +26,7 @@ whitecodel_auto_link abcdef123456789
 
 ## Author
 
-- [Whitecodel](https://academy.whitecodel.com/)
+- [Bhawani Shankar](https://www.linkedin.com/in/bhawani-shankar-mahawar-601777170/)
 
 ## License
 

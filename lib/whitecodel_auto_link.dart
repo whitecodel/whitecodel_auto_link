@@ -32,7 +32,10 @@ startProcess(diawiToken) async {
     do {
       await Future.delayed(Duration(seconds: 2));
       diawiStatusResponse = await checkDiawiStatus(jobId, diawiToken);
-      print('Diawi Status Response: $diawiStatusResponse');
+      print('Diawi Status Response: \n');
+      print(diawiStatusResponse);
+      print(
+          'Like the package? Please give it a 👍 here: https://pub.dev/packages/whitecodel_auto_link');
     } while (diawiStatusResponse['status'] != 2000);
   } catch (e) {
     print('Error: $e');
