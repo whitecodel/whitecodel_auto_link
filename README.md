@@ -30,4 +30,4 @@ whitecodel_auto_link abcdef123456789
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/whitecodel/whitecodel_auto_link/blob/main/LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/whitecodel/whitecodel_auto_link/blob/main/LICENSE) file for details.
