@@ -63,6 +63,7 @@ Future<void> buildApk() async {
 }
 
 Future<Map<String, dynamic>> uploadToDiawi(diawiToken) async {
+  print('Your Diawi Token: $diawiToken');
   print('Uploading APK to Diawi... 🚀');
   var diawiUploadUrl = 'https://upload.diawi.com/';
 
