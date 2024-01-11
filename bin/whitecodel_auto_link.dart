@@ -9,7 +9,7 @@ void main(List<String> arguments) {
     print(error(
         'Error: Please provide the token like this: ${chalk.yellow('whitecodel_auto_link <token>')}'));
     print(info(
-        'Info: To obtain your Diawi token, visit ${chalk.green.underline('https://dashboard.diawi.com/profile/api')}'));
+        'Info: To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api'));
     return;
   }
 
