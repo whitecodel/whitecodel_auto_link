@@ -4,6 +4,10 @@
 
 This script automates the process of building and uploading Flutter APK and IPA files to Diawi.
 
+## Video Tutorial
+
+[![YouTube Video](https://img.youtube.com/vi/uueVxQoJqCQ/sddefault.jpg)](https://youtu.be/uueVxQoJqCQ?si=-2FqtyDamjCwEVpE)
+
 ## Prerequisites
 
 Before using this script, make sure you have the following:
