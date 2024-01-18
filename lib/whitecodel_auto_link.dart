@@ -84,8 +84,12 @@ void startProcess(diawiToken,
       });
     }
 
-    await Directory('Payload').delete(recursive: true);
-    await File('Runner.ipa').delete();
+    if (await Directory('Payload').exists()) {
+      await Directory('Payload').delete(recursive: true);
+    }
+    if (await File('Runner.ipa').exists()) {
+      await File('Runner.ipa').delete();
+    }
 
     print('\n');
 
