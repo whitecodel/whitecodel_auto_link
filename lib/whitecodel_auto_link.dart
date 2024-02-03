@@ -243,7 +243,7 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
 
   var request = http.MultipartRequest('POST', Uri.parse(diawiUploadUrl))
     ..files
-        .add(await http.MultipartFile.fromPath('file', 'com.kalem.just1mb.apk'))
+        .add(await http.MultipartFile.fromPath('file', path))
     ..headers['token'] = token;
 
   var response = await request.send();
@@ -253,13 +253,15 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
     throw error('Invalid Token');
   }
 
-  if (response.statusCode > 299) {
-    throw error('Try again later');
-  }
+  // if (response.statusCode > 299) {
+  //   throw error('Try again later');
+  // }
 
   var responseBody = await response.stream.toBytes();
 
   var responseString = String.fromCharCodes(responseBody);
+
+  print(info('Info: ${responseString}'));
 
   return json.decode(responseString);
 }
