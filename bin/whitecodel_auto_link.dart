@@ -1,41 +1,81 @@
 import 'package:whitecodel_auto_link/whitecodel_auto_link.dart';
 import 'package:chalkdart/chalk.dart';
+import 'dart:io';
+import 'package:interact/interact.dart';
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
 void main(List<String> arguments) {
-  if (arguments.isEmpty) {
+  String? token;
+
+  String? username =
+      Platform.environment['USER'] ?? Platform.environment['USERNAME'];
+
+  String? macPath = '/Users/$username/.whitecodel-app-share-token.txt';
+  String? linuxPath = '/home/$username/.whitecodel-app-share-token.txt';
+  String? windowsPath = 'C:\\Users\\$username\\.whitecodel-app-share-token.txt';
+
+  String path = Platform.isMacOS
+      ? macPath
+      : Platform.isLinux
+          ? linuxPath
+          : windowsPath;
+
+  // read file path
+  var file = File(path);
+  if (file.existsSync()) {
+    token = file.readAsStringSync();
+  }
+
+  String argumentsString = arguments.join(' ');
+
+  if (token == null && argumentsString != 'login') {
     print(error(
-        'Error: Please provide the token like this: ${chalk.yellow('whitecodel_auto_link <token>')}'));
+        'Error: Please provide the token use this: ${chalk.yellow('whitecodel_auto_link login')}'));
     print(info(
-        'Info: To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api'));
+        'Info: To obtain your WhiteCodel App Share token, visit https://tools.whitecodel.com/account'));
     return;
   }
 
-  print(info('Info: Starting Whitecodel Auto Link... 🚀'));
-
-  if (arguments.length == 1) {
-    startProcess(arguments[0]);
-  } else if (arguments.length == 2) {
-    if (!['apk', 'ipa', 'both'].contains(arguments[1])) {
-      print(error(
-          'Error: Invalid build type. Valid build types are: ${chalk.yellow('apk, ipa, both')}'));
+  switch (argumentsString) {
+    case 'login':
+      // Ask the user for input
+      stdout.write('Enter a value: ');
+      // Read the entered value
+      var enteredValue = stdin.readLineSync();
+      token = enteredValue;
+      file.createSync();
+      // write to file path
+      file.writeAsStringSync(token!);
+      print(info('Info: Token has been updated successfully'));
       return;
-    }
-    startProcess(arguments[0], buildType: arguments[1], releaseType: 'debug');
-  } else if (arguments.length == 3) {
-    if (!['apk', 'ipa', 'both'].contains(arguments[1])) {
-      print(error(
-          'Error: Invalid build type. Valid build types are: ${chalk.yellow('apk, ipa, both')}'));
+    case 'logout':
+      token = null;
+      // delete file path
+      file.deleteSync();
+      print(info('Info: Token has been removed successfully'));
       return;
-    }
-    if (!['debug', 'release'].contains(arguments[2])) {
-      print(error(
-          'Error: Invalid release type. Valid release types are: ${chalk.yellow('debug, release')}'));
-      return;
-    }
-    startProcess(arguments[0],
-        buildType: arguments[1], releaseType: arguments[2]);
   }
+
+  String buildType = '';
+  String releaseType = '';
+
+  // select build type
+  List<String> buildTypeOptions = ['apk', 'ipa', 'both'];
+  var selectedBuildTypeIndex = Select(
+    prompt: 'Select the build type',
+    options: buildTypeOptions,
+  ).interact();
+  buildType = buildTypeOptions[selectedBuildTypeIndex];
+
+  // select release type
+  List<String> releaseTypeOptions = ['debug', 'release'];
+  var selectedReleaseTypeIndex = Select(
+    prompt: 'Select the release type',
+    options: releaseTypeOptions,
+  ).interact();
+  releaseType = releaseTypeOptions[selectedReleaseTypeIndex];
+
+  startProcess(token, releaseType: releaseType, buildType: buildType);
 }

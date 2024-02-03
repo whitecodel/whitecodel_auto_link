@@ -14,12 +14,24 @@ Before using this script, make sure you have the following:
 
 - **Flutter SDK**: Ensure that Flutter is installed on your machine. You can install it by following the instructions on the [Flutter website](https://flutter.dev/docs/get-started/install).
 
-- **Diawi Token**: Obtain your Diawi token by visiting [https://dashboard.diawi.com/profile/api](https://dashboard.diawi.com/profile/api).
+- **WhiteCodel App Share Token**: Obtain your WhiteCodel App Share token by visiting [https://tools.whitecodel.com/account](https://dashboard.diawi.com/profile/api).
+
+## Installation
+
+```baash
+dart pub global activate whitecodel_auto_link
+```
 
 ## Usage
 
 ```bash
-whitecodel_auto_link <token> <buildType> <releaseType>
+whitecodel_auto_link login
+```
+```bash
+whitecodel_auto_link <buildType> <releaseType>
+```
+```bash
+whitecodel_auto_link logout
 ```
 
 ## Default Values
@@ -30,12 +42,12 @@ whitecodel_auto_link <token> <buildType> <releaseType>
 ## Example
 
 ```bash
-whitecodel_auto_link abcdef123456789 apk release
-whitecodel_auto_link abcdef123456789 ipa release
-whitecodel_auto_link abcdef123456789 both release
-whitecodel_auto_link abcdef123456789 apk debug
-whitecodel_auto_link abcdef123456789 ipa debug
-whitecodel_auto_link abcdef123456789 both debug
+whitecodel_auto_link apk release
+whitecodel_auto_link ipa release
+whitecodel_auto_link both release
+whitecodel_auto_link apk debug
+whitecodel_auto_link ipa debug
+whitecodel_auto_link both debug
 ```
 
 ## Author

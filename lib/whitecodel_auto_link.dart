@@ -2,84 +2,117 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:chalkdart/chalk.dart';
+import 'package:interact/interact.dart';
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
 void main(List<String> arguments) {
-  if (arguments.isEmpty) {
+  String? token;
+
+  String? username =
+      Platform.environment['USER'] ?? Platform.environment['USERNAME'];
+
+  String? macPath = '/Users/$username/.whitecodel-app-share-token.txt';
+  String? linuxPath = '/home/$username/.whitecodel-app-share-token.txt';
+  String? windowsPath = 'C:\\Users\\$username\\.whitecodel-app-share-token.txt';
+
+  String path = Platform.isMacOS
+      ? macPath
+      : Platform.isLinux
+          ? linuxPath
+          : windowsPath;
+
+  // read file path
+  var file = File(path);
+  if (file.existsSync()) {
+    token = file.readAsStringSync();
+  }
+
+  String argumentsString = arguments.join(' ');
+
+  if (token == null && argumentsString != 'login') {
     print(error(
-        'Error: Please provide the token like this: ${chalk.yellow('whitecodel_auto_link <token>')}'));
+        'Error: Please provide the token use this: ${chalk.yellow('whitecodel_auto_link login')}'));
     print(info(
-        'Info: To obtain your Diawi token, visit https://dashboard.diawi.com/profile/api'));
+        'Info: To obtain your WhiteCodel App Share token, visit https://tools.whitecodel.com/account'));
     return;
   }
 
-  print(info('Info: Starting Whitecodel Auto Link... 🚀'));
-
-  if (arguments.length == 1) {
-    startProcess(arguments[0]);
-  } else if (arguments.length == 2) {
-    if (!['apk', 'ipa', 'both'].contains(arguments[1])) {
-      print(error(
-          'Error: Invalid build type. Valid build types are: ${chalk.yellow('apk, ipa, both')}'));
+  switch (argumentsString) {
+    case 'login':
+      // Ask the user for input
+      stdout.write('Enter a value: ');
+      // Read the entered value
+      var enteredValue = stdin.readLineSync();
+      token = enteredValue;
+      file.createSync();
+      // write to file path
+      file.writeAsStringSync(token!);
+      print(info('Info: Token has been updated successfully'));
       return;
-    }
-    startProcess(arguments[0], buildType: arguments[1], releaseType: 'debug');
-  } else if (arguments.length == 3) {
-    if (!['apk', 'ipa', 'both'].contains(arguments[1])) {
-      print(error(
-          'Error: Invalid build type. Valid build types are: ${chalk.yellow('apk, ipa, both')}'));
+    case 'logout':
+      token = null;
+      // delete file path
+      file.deleteSync();
+      print(info('Info: Token has been removed successfully'));
       return;
-    }
-    if (!['debug', 'release'].contains(arguments[2])) {
-      print(error(
-          'Error: Invalid release type. Valid release types are: ${chalk.yellow('debug, release')}'));
-      return;
-    }
-    startProcess(arguments[0],
-        buildType: arguments[1], releaseType: arguments[2]);
   }
+
+  String buildType = '';
+  String releaseType = '';
+
+  // select build type
+  List<String> buildTypeOptions = ['apk', 'ipa', 'both'];
+  var selectedBuildTypeIndex = Select(
+    prompt: 'Select the build type',
+    options: buildTypeOptions,
+  ).interact();
+  buildType = buildTypeOptions[selectedBuildTypeIndex];
+
+  // select release type
+  List<String> releaseTypeOptions = ['debug', 'release'];
+  var selectedReleaseTypeIndex = Select(
+    prompt: 'Select the release type',
+    options: releaseTypeOptions,
+  ).interact();
+  releaseType = releaseTypeOptions[selectedReleaseTypeIndex];
+
+  startProcess(token, releaseType: releaseType, buildType: buildType);
 }
 
-void startProcess(diawiToken,
-    {buildType = 'both', releaseType = 'debug'}) async {
+void startProcess(
+  token, {
+  releaseType = 'debug',
+  buildType = 'both',
+}) async {
   try {
     var finalResult = [];
 
     if (buildType == 'apk' || buildType == 'both') {
       await buildApk(releaseType);
-      var uploadResult = await uploadToDiawi(diawiToken,
-          'build/app/outputs/apk/release/app-$releaseType.apk', 'APK');
-      var jobId = uploadResult['job'];
-      var statusResult = await checkDiawiStatus(jobId, diawiToken);
-
-      while (statusResult['status'] != 2000) {
-        await Future.delayed(Duration(seconds: 5));
-        statusResult = await checkDiawiStatus(jobId, diawiToken);
-      }
+      var uploadResult = await uploadToWhiteCodelAppShare(
+          token, 'build/app/outputs/flutter-apk/app-$releaseType.apk', 'APK');
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
 
       finalResult.add({
         'for': 'APK',
-        'link': statusResult['link'],
+        'link': appUrl,
         'icon': '🤖',
       });
     }
 
     if (buildType == 'ipa' || buildType == 'both') {
       await buildIPA(releaseType);
-      var uploadResult = await uploadToDiawi(diawiToken, 'Runner.ipa', 'IPA');
-      var jobId = uploadResult['job'];
-      var statusResult = await checkDiawiStatus(jobId, diawiToken);
-
-      while (statusResult['status'] != 2000) {
-        await Future.delayed(Duration(seconds: 5));
-        statusResult = await checkDiawiStatus(jobId, diawiToken);
-      }
+      var uploadResult =
+          await uploadToWhiteCodelAppShare(token, 'Runner.ipa', 'IPA');
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
 
       finalResult.add({
         'for': 'IPA',
-        'link': statusResult['link'],
+        'link': appUrl,
         'icon': '',
       });
     }
@@ -104,6 +137,7 @@ void startProcess(diawiToken,
         'Info: Like the package? Please give it a 👍 here: ${chalk.green.underline('https://pub.dev/packages/whitecodel_auto_link')}'));
   } catch (e) {
     print(error('Error: $e'));
+    exit(1);
   }
 }
 
@@ -201,31 +235,31 @@ Future<void> buildIPA(releaseType) async {
   print(info('Info: IPA Build Completed Successfully'));
 }
 
-Future<Map<String, dynamic>> uploadToDiawi(diawiToken, path, buildType) async {
-  print(info('Info: Your Diawi Token: ${chalk.yellow(diawiToken)}'));
-  print(info('Info: Uploading ${buildType.toUpperCase()} to Diawi... 🚀'));
-  var diawiUploadUrl = 'https://upload.diawi.com/';
+Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
+  print(info('Info: Your WhiteCodel App Share Token: ${chalk.yellow(token)}'));
+  print(info(
+      'Info: Uploading ${buildType.toUpperCase()} to WhiteCodel App Share... 🚀'));
+  var diawiUploadUrl = 'http://localhost:3000/app-share/uploadFile';
 
   var request = http.MultipartRequest('POST', Uri.parse(diawiUploadUrl))
-    ..fields['token'] = diawiToken
-    ..fields['callback_emails'] = 'bhawanishankar1308@gmail.com'
-    ..files.add(await http.MultipartFile.fromPath('file', path));
+    ..files
+        .add(await http.MultipartFile.fromPath('file', 'com.kalem.just1mb.apk'))
+    ..headers['token'] = token;
 
   var response = await request.send();
+
+  // check status code
+  if (response.statusCode == 401) {
+    throw error('Invalid Token');
+  }
+
+  if (response.statusCode > 299) {
+    throw error('Try again later');
+  }
 
   var responseBody = await response.stream.toBytes();
 
   var responseString = String.fromCharCodes(responseBody);
 
   return json.decode(responseString);
-}
-
-Future<Map<String, dynamic>> checkDiawiStatus(String jobId, diawiToken) async {
-  print(info('Info: Checking Diawi Status... 🕵️‍♂️'));
-  var diawiStatusUrl =
-      'https://upload.diawi.com/status?token=$diawiToken&job=$jobId';
-
-  var response = await http.get(Uri.parse(diawiStatusUrl));
-
-  return json.decode(response.body);
 }
