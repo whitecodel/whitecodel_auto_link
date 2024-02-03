@@ -6,7 +6,7 @@ This script automates the process of building and uploading Flutter APK and IPA 
 
 ## Video Tutorial
 
-[![YouTube Video](https://img.youtube.com/vi/uueVxQoJqCQ/sddefault.jpg)](https://youtu.be/uueVxQoJqCQ?si=-2FqtyDamjCwEVpE)
+[![YouTube Video](https://img.youtube.com/vi/uueVxQoJqCQ/sddefault.jpg)](https://www.youtube.com/watch?v=ZCZ2ic0ePlQ)
 
 ## Prerequisites
 
