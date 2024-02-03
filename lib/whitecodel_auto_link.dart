@@ -239,7 +239,7 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
   print(info('Info: Your WhiteCodel App Share Token: ${chalk.yellow(token)}'));
   print(info(
       'Info: Uploading ${buildType.toUpperCase()} to WhiteCodel App Share... 🚀'));
-  var diawiUploadUrl = 'http://localhost:3000/app-share/uploadFile';
+  var diawiUploadUrl = 'https://tools.whitecodel.com/app-share/uploadFile';
 
   var request = http.MultipartRequest('POST', Uri.parse(diawiUploadUrl))
     ..files
