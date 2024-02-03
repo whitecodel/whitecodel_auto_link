@@ -28,26 +28,10 @@ dart pub global activate whitecodel_auto_link
 whitecodel_auto_link login
 ```
 ```bash
-whitecodel_auto_link <buildType> <releaseType>
-```
-```bash
 whitecodel_auto_link logout
 ```
-
-## Default Values
-
-- If `buildType` is not provided, it defaults to `both`.
-- If `releaseType` is not provided, it defaults to `debug`.
-
-## Example
-
 ```bash
-whitecodel_auto_link apk release
-whitecodel_auto_link ipa release
-whitecodel_auto_link both release
-whitecodel_auto_link apk debug
-whitecodel_auto_link ipa debug
-whitecodel_auto_link both debug
+whitecodel_auto_link
 ```
 
 ## Author
