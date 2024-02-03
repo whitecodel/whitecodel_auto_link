@@ -261,7 +261,5 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
 
   var responseString = String.fromCharCodes(responseBody);
 
-  print(info('Info: ${responseString}'));
-
   return json.decode(responseString);
 }
