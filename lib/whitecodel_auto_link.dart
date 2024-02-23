@@ -309,9 +309,11 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
   stdout
       .write('\rUploading ${buildType.toUpperCase()}... \x1B[90m Done\x1B[0m');
 
+  print('\n');
+
   if (buildType.toUpperCase() == 'APK') {
     print(info(
-        '\nInfo: Link for ${buildType.toUpperCase()}: ${chalk.green.underline(response.data['appMetaDoc']['appUrl'])} ${buildType.toUpperCase() == 'APK' ? '🤖' : ''}'));
+        'Info: Link for ${buildType.toUpperCase()}: ${chalk.green.underline(response.data['appMetaDoc']['appUrl'])} ${buildType.toUpperCase() == 'APK' ? '🤖' : ''}'));
   }
 
   if (response.statusCode != 200) {
