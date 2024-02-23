@@ -134,7 +134,7 @@ void startProcess(
 
     for (var result in finalResult) {
       print(info(
-          'Info: Link for ${result['for']}: ${chalk.green.underline(result['link'])} ${chalk.green(result['icon'])}'));
+          'Info: Link for ${result['for']}: ${chalk.green.underline(result['link'])} ${result['icon']}'));
     }
 
     print('\n\n');
