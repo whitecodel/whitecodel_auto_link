@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:chalkdart/chalk.dart';
-import 'package:http/http.dart';
 import 'package:interact/interact.dart';
 import 'package:dio/dio.dart' as dio;
 
