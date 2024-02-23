@@ -1,13 +1,19 @@
-import 'package:http/http.dart' as http;
+import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:chalkdart/chalk.dart';
+import 'package:http/http.dart';
 import 'package:interact/interact.dart';
+import 'package:dio/dio.dart' as dio;
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
 void main(List<String> arguments) {
+  // clear console
+  print('\x1B[2J\x1B[0;0H');
   String? token;
 
   String? username =
@@ -142,7 +148,13 @@ void startProcess(
 }
 
 Future<void> buildApk(releaseType) async {
+  double ticks = 0.0;
   print(info('Info: Building $releaseType APK... 🔨'));
+  var timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    ticks += 0.1;
+    stdout.write(
+        '\rBuilding APK... \x1B[90m(${ticks.toStringAsFixed(1)}s)\x1B[0m\r');
+  });
   var process =
       await Process.start('flutter', ['build', 'apk', '--$releaseType']);
 
@@ -159,10 +171,15 @@ Future<void> buildApk(releaseType) async {
     throw error('Error: Command failed with exit code $exitCode');
   }
 
+  timer.cancel();
+  stdout.write(
+      '\rBuilding APK Done \x1B[90m(${ticks.toStringAsFixed(1)}s)\x1B[0m\n');
+
   print(info('Info: APK Build Completed Successfully'));
 }
 
 Future<void> buildIPA(releaseType) async {
+  double ticks = 0.0;
   bool isGitIgnoreExists = await File('.gitignore').exists();
 
   if (isGitIgnoreExists) {
@@ -183,6 +200,13 @@ Future<void> buildIPA(releaseType) async {
   await Directory('Payload').create();
 
   print(info('Info: Building $releaseType IPA... 🔨'));
+
+  var timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    ticks += 0.1;
+    stdout.write(
+        '\rBuilding IPA... \x1B[90m(${ticks.toStringAsFixed(1)}s)\x1B[0m\r');
+  });
+
   var process =
       await Process.start('flutter', ['build', 'ios', '--$releaseType']);
 
@@ -232,6 +256,10 @@ Future<void> buildIPA(releaseType) async {
     throw error('Error: Command failed with exit code $exitCode3');
   }
 
+  timer.cancel();
+  stdout.write(
+      '\rBuilding IPA Done \x1B[90m(${ticks.toStringAsFixed(1)}s)\x1B[0m\n');
+
   print(info('Info: IPA Build Completed Successfully'));
 }
 
@@ -239,27 +267,58 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
   print(info('Info: Your WhiteCodel App Share Token: ${chalk.yellow(token)}'));
   print(info(
       'Info: Uploading ${buildType.toUpperCase()} to WhiteCodel App Share... 🚀'));
+
   var diawiUploadUrl = 'https://tools.whitecodel.com/app-share/uploadFile';
 
-  var request = http.MultipartRequest('POST', Uri.parse(diawiUploadUrl))
-    ..files
-        .add(await http.MultipartFile.fromPath('file', path))
-    ..headers['token'] = token;
+  Dio dioObject = Dio();
 
-  var response = await request.send();
+  FormData formData = FormData();
+  formData.fields.add(MapEntry('token', token));
+  formData.files.add(MapEntry('file', await dio.MultipartFile.fromFile(path)));
 
-  // check status code
-  if (response.statusCode == 401) {
-    throw error('Invalid Token');
+  var response = await dioObject.post(
+    diawiUploadUrl,
+    options: Options(
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'token': token,
+      },
+    ),
+    data: formData,
+    onSendProgress: (int sent, int total) {
+      num newTotal = total / 1024;
+      num newSent = sent / 1024;
+      String sizeUnit;
+      num size;
+      if (newTotal <= 1024) {
+        size = newTotal.toDouble();
+        sizeUnit = 'KB';
+      } else {
+        size = newTotal / 1024.0; // Convert to MB
+        newSent = newSent / 1024.0; // Convert to MB
+        sizeUnit = 'MB';
+      }
+      double percentage = (sent / total) * 100;
+      size = double.parse(size.toStringAsFixed(2));
+      newSent = double.parse(newSent.toStringAsFixed(2));
+      stdout.write(
+          '\rUploading ${buildType.toUpperCase()}... \x1B[90mSent: $newSent $sizeUnit / $size $sizeUnit (${percentage.toStringAsFixed(1)}%)\x1B[0m');
+    },
+  );
+
+  stdout
+      .write('\rUploading ${buildType.toUpperCase()}... \x1B[90m Done\x1B[0m');
+
+  if (buildType.toUpperCase() == 'APK') {
+    print(info(
+        '\nInfo: Link for ${buildType.toUpperCase()}: ${chalk.green.underline(response.data['appMetaDoc']['appUrl'])} ${buildType.toUpperCase() == 'APK' ? '🤖' : ''}'));
   }
 
-  // if (response.statusCode > 299) {
-  //   throw error('Try again later');
-  // }
+  if (response.statusCode != 200) {
+    throw error('Error: Failed to upload $buildType to WhiteCodel App Share');
+  }
 
-  var responseBody = await response.stream.toBytes();
+  var responseBody = response.data;
 
-  var responseString = String.fromCharCodes(responseBody);
-
-  return json.decode(responseString);
+  return responseBody;
 }

@@ -7,6 +7,7 @@ var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
 void main(List<String> arguments) {
+  print('\x1B[2J\x1B[0;0H');
   String? token;
 
   String? username =
