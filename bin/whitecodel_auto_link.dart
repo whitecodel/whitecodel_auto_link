@@ -6,8 +6,12 @@ import 'package:interact/interact.dart';
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
+  // clear console
   print('\x1B[2J\x1B[0;0H');
+  // check for update
+  await checkForUpdate();
+
   String? token;
 
   String? username =
