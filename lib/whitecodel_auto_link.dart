@@ -6,13 +6,17 @@ import 'dart:io';
 import 'package:chalkdart/chalk.dart';
 import 'package:interact/interact.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:version/version.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
   // clear console
   print('\x1B[2J\x1B[0;0H');
+  // check for update
+  await checkForUpdate();
   String? token;
 
   String? username =
@@ -322,4 +326,92 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
   var responseBody = response.data;
 
   return responseBody;
+}
+
+checkInternet() async {
+  try {
+    final result = await InternetAddress.lookup('pub.dev');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      print(info('Info: Internet is available'));
+    }
+    return true;
+  } on SocketException catch (_) {
+    print(chalk.yellow('Warning: No internet connection'));
+    return false;
+  }
+}
+
+getLatestVersionFromPackage(String package) async {
+  final languageCode = Platform.localeName.split('_')[0];
+  final pubSite = languageCode == 'zh'
+      ? 'https://pub.flutter-io.cn/api/packages/$package'
+      : 'https://pub.dev/api/packages/$package';
+  var uri = Uri.parse(pubSite);
+  try {
+    final value = await Dio().getUri(uri);
+    final version = value.data['latest']['version'] as String?;
+    return version;
+  } catch (e) {
+    return null;
+  }
+}
+
+getCurrentVersion() async {
+  final pubspecFile = File('pubspec.yaml');
+  final pubspecContent = pubspecFile.readAsStringSync();
+  final pubspec = Pubspec.parse(pubspecContent);
+  final version = pubspec.version;
+  return version.toString();
+}
+
+checkForUpdate() async {
+  print(info('Info: Checking for update'));
+  bool isInternet = await checkInternet();
+  if (!isInternet) {
+    print(chalk.yellow('Warning: Update check failed'));
+    return;
+  }
+  ;
+  var versionInPubDev =
+      await getLatestVersionFromPackage('whitecodel_auto_link');
+  var versionInstalled = await getCurrentVersion();
+
+  if (versionInstalled == null) {
+    exit(2);
+  }
+
+  final v1 = Version.parse(versionInPubDev!);
+  final v2 = Version.parse(versionInstalled);
+  final needsUpdate = v1.compareTo(v2);
+  // needs update.
+
+  if (needsUpdate == 1) {
+    print(info('Info: Update available for whitecodel_auto_link'));
+    print(info(
+        'Info: Run ${chalk.green('flutter pub global activate whitecodel_auto_link')} to update'));
+
+    // ask for update
+    var shouldUpdate = Confirm(
+      prompt: 'Do you want to update whitecodel_auto_link?',
+    ).interact();
+
+    if (shouldUpdate) {
+      var process = await Process.start(
+          'flutter', ['pub', 'global', 'activate', 'whitecodel_auto_link']);
+      process.stdout.transform(utf8.decoder).listen((data) {
+        print(data);
+      });
+
+      process.stderr.transform(utf8.decoder).listen((data) {
+        print(error('Error: $data'));
+      });
+
+      var exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw error('Error: Command failed with exit code $exitCode');
+      }
+    }
+  } else {
+    print(info('Info: whitecodel_auto_link is up to date'));
+  }
 }
