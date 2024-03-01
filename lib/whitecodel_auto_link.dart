@@ -357,11 +357,12 @@ getLatestVersionFromPackage(String package) async {
 }
 
 getCurrentVersion() async {
-  final pubspecFile = File('pubspec.yaml');
-  final pubspecContent = pubspecFile.readAsStringSync();
-  final pubspec = Pubspec.parse(pubspecContent);
-  final version = pubspec.version;
-  return version.toString();
+  // final pubspecFile = File('pubspec.yaml');
+  // final pubspecContent = pubspecFile.readAsStringSync();
+  // final pubspec = Pubspec.parse(pubspecContent);
+  // final version = pubspec.version;
+  // return version.toString();
+  return '1.1.11';
 }
 
 checkForUpdate() async {
