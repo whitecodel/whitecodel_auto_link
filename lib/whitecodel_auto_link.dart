@@ -11,6 +11,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
+var more_highlight = chalk.bold.green;
 
 void main(List<String> arguments) async {
   // clear console
@@ -98,7 +99,7 @@ void startProcess(
   try {
     var finalResult = [];
 
-    if (buildType == 'apk' || buildType == 'both') {
+    if (buildType == 'apk') {
       await buildApk(releaseType);
       var uploadResult = await uploadToWhiteCodelAppShare(
           token, 'build/app/outputs/flutter-apk/app-$releaseType.apk', 'APK');
@@ -112,7 +113,7 @@ void startProcess(
       });
     }
 
-    if (buildType == 'ipa' || buildType == 'both') {
+    if (buildType == 'ipa') {
       await buildIPA(releaseType);
       var uploadResult =
           await uploadToWhiteCodelAppShare(token, 'Runner.ipa', 'IPA');
@@ -122,6 +123,37 @@ void startProcess(
       finalResult.add({
         'for': 'IPA',
         'link': appUrl,
+        'icon': '',
+      });
+    }
+
+    if (buildType == 'both') {
+      await buildApk(releaseType);
+      print(more_highlight(
+          'Info: Uploading APK and Building IPA simultaneously... 🚀'));
+      List futureResults = await Future.wait([
+        uploadToWhiteCodelAppShare(
+            token, 'build/app/outputs/flutter-apk/app-$releaseType.apk', 'APK'),
+        buildIPA(releaseType),
+      ]);
+      var uploadResult = futureResults[0];
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
+
+      finalResult.add({
+        'for': 'APK',
+        'link': appUrl,
+        'icon': '🤖',
+      });
+
+      var uploadResult2 =
+          await uploadToWhiteCodelAppShare(token, 'Runner.ipa', 'IPA');
+      var appMetaDoc2 = uploadResult2['appMetaDoc'];
+      var appUrl2 = appMetaDoc2['appUrl'];
+
+      finalResult.add({
+        'for': 'IPA',
+        'link': appUrl2,
         'icon': '',
       });
     }
@@ -305,7 +337,8 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
       size = double.parse(size.toStringAsFixed(2));
       newSent = double.parse(newSent.toStringAsFixed(2));
       stdout.write(
-          '\rUploading ${buildType.toUpperCase()}... \x1B[90mSent: $newSent $sizeUnit / $size $sizeUnit (${percentage.toStringAsFixed(1)}%)\x1B[0m');
+          '\rUploading ${buildType.toUpperCase()}... \x1B[90mSent: $newSent $sizeUnit / $size $sizeUnit (${percentage.toStringAsFixed(1)}%)\x1B[0m\r');
+      // spacer next line
     },
   );
 
@@ -362,7 +395,7 @@ getCurrentVersion() async {
   // final pubspec = Pubspec.parse(pubspecContent);
   // final version = pubspec.version;
   // return version.toString();
-  return '1.1.11';
+  return '1.1.12';
 }
 
 checkForUpdate() async {

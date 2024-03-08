@@ -4,6 +4,8 @@
 
 This script automates the process of building and uploading Flutter APK and IPA files to Diawi.
 
+Support for IPA building and APK uploading simultaneously  speed up the process 🚀
+
 ## Video Tutorial
 
 [![YouTube Video](https://img.youtube.com/vi/uueVxQoJqCQ/sddefault.jpg)](https://www.youtube.com/watch?v=ZCZ2ic0ePlQ)
@@ -27,9 +29,11 @@ dart pub global activate whitecodel_auto_link
 ```bash
 whitecodel_auto_link login
 ```
+
 ```bash
 whitecodel_auto_link logout
 ```
+
 ```bash
 whitecodel_auto_link
 ```
