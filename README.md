@@ -2,7 +2,7 @@
 
 ## Overview
 
-This script automates the process of building and uploading Flutter APK and IPA files to Diawi.
+This script automates the process of building and uploading Flutter APK and IPA files to WhiteCodel App Share.
 
 Support for IPA building and APK uploading simultaneously  speed up the process 🚀
 
@@ -16,7 +16,7 @@ Before using this script, make sure you have the following:
 
 - **Flutter SDK**: Ensure that Flutter is installed on your machine. You can install it by following the instructions on the [Flutter website](https://flutter.dev/docs/get-started/install).
 
-- **WhiteCodel App Share Token**: Obtain your WhiteCodel App Share token by visiting [https://tools.whitecodel.com/account](https://dashboard.diawi.com/profile/api).
+- **WhiteCodel App Share Token**: Obtain your WhiteCodel App Share token by visiting [https://tools.whitecodel.com/account](https://tools.whitecodel.com/account).
 
 ## Installation
 
