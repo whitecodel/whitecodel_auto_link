@@ -395,7 +395,7 @@ getCurrentVersion() async {
   // final pubspec = Pubspec.parse(pubspecContent);
   // final version = pubspec.version;
   // return version.toString();
-  return '1.1.12';
+  return '1.1.14';
 }
 
 checkForUpdate() async {
