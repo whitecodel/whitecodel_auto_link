@@ -63,14 +63,24 @@ void main(List<String> arguments) async {
       return;
     case 'only-upload':
       stdout.write('Enter the file path: ');
-      var filePath = stdin.readLineSync();
+      var filePath = await readLine(); // Use readLine for autocomplete
       if (filePath == null || filePath.isEmpty) {
         print(error('Error: File path cannot be empty'));
         return;
       }
+      // Remove surrounding quotes if present
+      if ((filePath.startsWith("'") && filePath.endsWith("'")) ||
+          (filePath.startsWith('"') && filePath.endsWith('"'))) {
+        filePath = filePath.substring(1, filePath.length - 1);
+      }
+      // Convert to absolute path if not already
+      if (!File(filePath).isAbsolute) {
+        filePath = File(filePath).absolute.path;
+      }
       var fileToUpload = File(filePath);
       if (!fileToUpload.existsSync()) {
-        print(error('Error: File does not exist'));
+        print(error(
+            'Error: File does not exist at the provided path: $filePath'));
         return;
       }
       var buildType = filePath.endsWith('.apk')
@@ -112,4 +122,9 @@ void main(List<String> arguments) async {
   releaseType = releaseTypeOptions[selectedReleaseTypeIndex];
 
   startProcess(token, releaseType: releaseType, buildType: buildType);
+}
+
+Future<String?> readLine() async {
+  stdout.write('> ');
+  return stdin.readLineSync();
 }

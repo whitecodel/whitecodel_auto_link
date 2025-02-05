@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.16] - 2025-02-05
+
+### Fixed
+
+- Asking update again and again issue fixed.
+- Improved validation for file existence and supported file types in the `only-upload` command.
+
 ## [1.1.15] - 2025-02-05
 
 ### Added
