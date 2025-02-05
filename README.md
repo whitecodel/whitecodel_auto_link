@@ -4,7 +4,7 @@
 
 This script automates the process of building and uploading Flutter APK and IPA files to WhiteCodel App Share.
 
-Support for IPA building and APK uploading simultaneously  speed up the process 🚀
+Support for IPA building and APK uploading simultaneously speed up the process 🚀
 
 ## Video Tutorial
 
@@ -20,7 +20,7 @@ Before using this script, make sure you have the following:
 
 ## Installation
 
-```baash
+```bash
 dart pub global activate whitecodel_auto_link
 ```
 
@@ -37,6 +37,16 @@ whitecodel_auto_link logout
 ```bash
 whitecodel_auto_link
 ```
+
+```bash
+whitecodel_auto_link only-upload
+```
+
+This command will prompt you to enter the file path of the APK or IPA file you want to upload.
+
+## Changelog
+
+See the [CHANGELOG](CHANGELOG.md) file for details.
 
 ## Author
 

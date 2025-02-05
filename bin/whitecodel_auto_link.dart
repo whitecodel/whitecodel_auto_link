@@ -61,6 +61,35 @@ void main(List<String> arguments) async {
       file.deleteSync();
       print(info('Info: Token has been removed successfully'));
       return;
+    case 'only-upload':
+      stdout.write('Enter the file path: ');
+      var filePath = stdin.readLineSync();
+      if (filePath == null || filePath.isEmpty) {
+        print(error('Error: File path cannot be empty'));
+        return;
+      }
+      var fileToUpload = File(filePath);
+      if (!fileToUpload.existsSync()) {
+        print(error('Error: File does not exist'));
+        return;
+      }
+      var buildType = filePath.endsWith('.apk')
+          ? 'APK'
+          : filePath.endsWith('.ipa')
+              ? 'IPA'
+              : null;
+      if (buildType == null) {
+        print(error(
+            'Error: Unsupported file type. Please provide an APK or IPA file.'));
+        return;
+      }
+      var uploadResult =
+          await uploadToWhiteCodelAppShare(token, filePath, buildType);
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
+      print(info(
+          'Info: Link for $buildType: ${chalk.green.underline(appUrl)} ${buildType == 'APK' ? '🤖' : ''}'));
+      return;
   }
 
   String buildType = '';
