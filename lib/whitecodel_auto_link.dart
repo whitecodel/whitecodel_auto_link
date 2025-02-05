@@ -7,11 +7,10 @@ import 'package:chalkdart/chalk.dart';
 import 'package:interact/interact.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:version/version.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 var error = chalk.bold.red;
 var info = chalk.bold.blue;
-var more_highlight = chalk.bold.green;
+var moreHighlight = chalk.bold.green;
 
 void main(List<String> arguments) async {
   // clear console
@@ -158,7 +157,7 @@ void startProcess(
 
     if (buildType == 'both') {
       await buildApk(releaseType);
-      print(more_highlight(
+      print(moreHighlight(
           'Info: Uploading APK and Building IPA simultaneously... 🚀'));
       List futureResults = await Future.wait([
         uploadToWhiteCodelAppShare(
@@ -434,7 +433,6 @@ checkForUpdate() async {
     print(chalk.yellow('Warning: Update check failed'));
     return;
   }
-  ;
   var versionInPubDev =
       await getLatestVersionFromPackage('whitecodel_auto_link');
   var versionInstalled = await getCurrentVersion();
