@@ -13,12 +13,13 @@ var info = chalk.bold.blue;
 var moreHighlight = chalk.bold.green;
 
 void main(List<String> arguments) async {
-  // clear console
+  // Clear console
   print('\x1B[2J\x1B[0;0H');
-  // check for update
-  await checkForUpdate();
-  String? token;
 
+  // Check for update
+  await checkForUpdate();
+
+  String? token;
   String? username =
       Platform.environment['USER'] ?? Platform.environment['USERNAME'];
 
@@ -32,17 +33,17 @@ void main(List<String> arguments) async {
           ? linuxPath
           : windowsPath;
 
-  // read file path
+  // Read token file
   var file = File(path);
   if (file.existsSync()) {
-    token = file.readAsStringSync();
+    token = file.readAsStringSync().trim();
   }
 
   String argumentsString = arguments.join(' ');
 
   if (token == null && argumentsString != 'login') {
     print(error(
-        'Error: Please provide the token use this: ${chalk.yellow('whitecodel_auto_link login')}'));
+        'Error: Please provide the token using: ${chalk.yellow('whitecodel_auto_link login')}'));
     print(info(
         'Info: To obtain your WhiteCodel App Share token, visit https://tools.whitecodel.com/account'));
     return;
@@ -50,44 +51,42 @@ void main(List<String> arguments) async {
 
   switch (argumentsString) {
     case 'login':
-      // Ask the user for input
-      stdout.write('Enter a value: ');
-      // Read the entered value
-      var enteredValue = stdin.readLineSync();
-      token = enteredValue;
-      file.createSync();
-      // write to file path
-      file.writeAsStringSync(token!);
-      print(info('Info: Token has been updated successfully'));
+      stdout.write('Enter your token: ');
+      var enteredValue = stdin.readLineSync()?.trim();
+      if (enteredValue != null && enteredValue.isNotEmpty) {
+        file.createSync(recursive: true);
+        file.writeAsStringSync(enteredValue);
+        print(info('Info: Token has been updated successfully'));
+      } else {
+        print(error('Error: Token cannot be empty'));
+      }
       return;
+
     case 'logout':
-      token = null;
-      // delete file path
-      file.deleteSync();
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
       print(info('Info: Token has been removed successfully'));
       return;
+
     case 'only-upload':
       stdout.write('Enter the file path: ');
-      var filePath = await readLine(); // Use readLine for autocomplete
-      if (filePath == null || filePath.isEmpty) {
+      var filePath = await readLine();
+      if (filePath == null || filePath.trim().isEmpty) {
         print(error('Error: File path cannot be empty'));
         return;
       }
-      // Remove surrounding quotes if present
-      if ((filePath.startsWith("'") && filePath.endsWith("'")) ||
-          (filePath.startsWith('"') && filePath.endsWith('"'))) {
-        filePath = filePath.substring(1, filePath.length - 1);
-      }
-      // Convert to absolute path if not already
-      if (!File(filePath).isAbsolute) {
-        filePath = File(filePath).absolute.path;
-      }
+
+      // Ensure proper file path formatting
+      filePath = formatPath(filePath);
+
       var fileToUpload = File(filePath);
       if (!fileToUpload.existsSync()) {
         print(error(
             'Error: File does not exist at the provided path: $filePath'));
         return;
       }
+
       var buildType = filePath.endsWith('.apk')
           ? 'APK'
           : filePath.endsWith('.ipa')
@@ -98,6 +97,7 @@ void main(List<String> arguments) async {
             'Error: Unsupported file type. Please provide an APK or IPA file.'));
         return;
       }
+
       var uploadResult =
           await uploadToWhiteCodelAppShare(token, filePath, buildType);
       var appMetaDoc = uploadResult['appMetaDoc'];
@@ -110,20 +110,18 @@ void main(List<String> arguments) async {
   String buildType = '';
   String releaseType = '';
 
-  // select build type
+  // Select build type
   List<String> buildTypeOptions = ['apk', 'ipa', 'both'];
-  var selectedBuildTypeIndex = Select(
-    prompt: 'Select the build type',
-    options: buildTypeOptions,
-  ).interact();
+  var selectedBuildTypeIndex =
+      Select(prompt: 'Select the build type', options: buildTypeOptions)
+          .interact();
   buildType = buildTypeOptions[selectedBuildTypeIndex];
 
-  // select release type
+  // Select release type
   List<String> releaseTypeOptions = ['debug', 'release'];
-  var selectedReleaseTypeIndex = Select(
-    prompt: 'Select the release type',
-    options: releaseTypeOptions,
-  ).interact();
+  var selectedReleaseTypeIndex =
+      Select(prompt: 'Select the release type', options: releaseTypeOptions)
+          .interact();
   releaseType = releaseTypeOptions[selectedReleaseTypeIndex];
 
   startProcess(token, releaseType: releaseType, buildType: buildType);
@@ -131,7 +129,21 @@ void main(List<String> arguments) async {
 
 Future<String?> readLine() async {
   stdout.write('> ');
-  return stdin.readLineSync();
+  return stdin.readLineSync()?.trim();
+}
+
+String formatPath(String path) {
+  // Remove surrounding quotes if present
+  if ((path.startsWith("'") && path.endsWith("'")) ||
+      (path.startsWith('"') && path.endsWith('"'))) {
+    path = path.substring(1, path.length - 1);
+  }
+  // Convert to absolute path if needed
+  var file = File(path);
+  if (!file.isAbsolute) {
+    path = file.absolute.path;
+  }
+  return path.replaceAll('\\ ', ' '); // Fixes macOS issue with backslashes
 }
 
 void startProcess(
@@ -438,7 +450,7 @@ getCurrentVersion() async {
   // final pubspec = Pubspec.parse(pubspecContent);
   // final version = pubspec.version;
   // return version.toString();
-  return '1.1.16';
+  return '1.1.17';
 }
 
 checkForUpdate() async {
