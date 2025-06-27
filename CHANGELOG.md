@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.18] - 2025-02-20
+
+### Added
+
+- Added shorthand `u` flag that works the same as `only-upload` command for quicker file uploads.
+
 ## [1.1.17] - 2025-02-20
 
 ### Fixed

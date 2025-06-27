@@ -1,6 +1,6 @@
 name: whitecodel_auto_link
 description: A Dart package for automating the build, upload, and get the link of the APK and IPA files.
-version: 1.1.17
+version: 1.1.18
 repository: https://github.com/whitecodel/whitecodel_auto_link
 
 environment:

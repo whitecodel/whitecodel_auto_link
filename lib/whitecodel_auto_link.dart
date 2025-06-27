@@ -70,6 +70,7 @@ void main(List<String> arguments) async {
       return;
 
     case 'only-upload':
+    case 'u':
       stdout.write('Enter the file path: ');
       var filePath = await readLine();
       if (filePath == null || filePath.trim().isEmpty) {
@@ -450,7 +451,7 @@ getCurrentVersion() async {
   // final pubspec = Pubspec.parse(pubspecContent);
   // final version = pubspec.version;
   // return version.toString();
-  return '1.1.17';
+  return '1.1.18';
 }
 
 checkForUpdate() async {

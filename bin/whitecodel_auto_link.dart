@@ -64,6 +64,7 @@ void main(List<String> arguments) async {
       return;
 
     case 'only-upload':
+    case 'u':
       stdout.write('Enter the file path: ');
       var filePath = await readLine();
       if (filePath == null || filePath.trim().isEmpty) {

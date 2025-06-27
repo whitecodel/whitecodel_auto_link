@@ -42,7 +42,11 @@ whitecodel_auto_link
 whitecodel_auto_link only-upload
 ```
 
-This command will prompt you to enter the file path of the APK or IPA file you want to upload.
+```bash
+whitecodel_auto_link u
+```
+
+This command will prompt you to enter the file path of the APK or IPA file you want to upload. The `u` flag is a shorthand for `only-upload`.
 
 ## Changelog
 
