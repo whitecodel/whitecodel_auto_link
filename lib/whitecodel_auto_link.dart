@@ -448,7 +448,7 @@ Future<dynamic> uploadFromUrlToWhiteCodelAppShare(token, fileUrl) async {
         'token': token,
       },
     ),
-    data: jsonEncode({'fileUrl': fileUrl}),
+    data: {'fileUrl': fileUrl},
   );
 
   if (response.statusCode != 200) {
