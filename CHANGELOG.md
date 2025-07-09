@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.19+2] - 2025-07-09
+
+### Fixed
+
+- Upload by url not working issue fixed.
+
 ## [1.1.19+1] - 2025-07-09
 
 ### Fixed
