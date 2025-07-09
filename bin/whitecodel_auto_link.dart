@@ -100,6 +100,21 @@ void main(List<String> arguments) async {
       print(info(
           'Info: Link for $buildType: ${chalk.green.underline(appUrl)} ${buildType == 'APK' ? '🤖' : ''}'));
       return;
+
+    case 'upload-from-url':
+    case 'uf':
+      stdout.write('Enter the file URL: ');
+      var fileUrl = await readLine();
+      if (fileUrl == null || fileUrl.trim().isEmpty) {
+        print(error('Error: File URL cannot be empty'));
+        return;
+      }
+      var uploadResult =
+          await uploadFromUrlToWhiteCodelAppShare(token, fileUrl.trim());
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
+      print(info('Info: Link: ${chalk.green.underline(appUrl)}'));
+      return;
   }
 
   String buildType = '';

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.19] - 2025-02-20
+
+### Added
+
+- Added `upload-from-url` and shorthand `uf` commands to upload APK or IPA files directly from a remote URL.
+
 ## [1.1.18] - 2025-02-20
 
 ### Added

@@ -106,6 +106,21 @@ void main(List<String> arguments) async {
       print(info(
           'Info: Link for $buildType: ${chalk.green.underline(appUrl)} ${buildType == 'APK' ? '🤖' : ''}'));
       return;
+
+    case 'upload-from-url':
+    case 'uf':
+      stdout.write('Enter the file URL: ');
+      var fileUrl = await readLine();
+      if (fileUrl == null || fileUrl.trim().isEmpty) {
+        print(error('Error: File URL cannot be empty'));
+        return;
+      }
+      var uploadResult =
+          await uploadFromUrlToWhiteCodelAppShare(token, fileUrl.trim());
+      var appMetaDoc = uploadResult['appMetaDoc'];
+      var appUrl = appMetaDoc['appUrl'];
+      print(info('Info: Link: ${chalk.green.underline(appUrl)}'));
+      return;
   }
 
   String buildType = '';
@@ -414,6 +429,33 @@ Future<dynamic> uploadToWhiteCodelAppShare(token, path, buildType) async {
 
   var responseBody = response.data;
 
+  return responseBody;
+}
+
+Future<dynamic> uploadFromUrlToWhiteCodelAppShare(token, fileUrl) async {
+  print(info('Info: Your WhiteCodel App Share Token: ${chalk.yellow(token)}'));
+  print(info('Info: Uploading from URL to WhiteCodel App Share... 🚀'));
+
+  var uploadUrl = 'https://tools.whitecodel.com/app-share/uploadFromUrl';
+
+  Dio dioObject = Dio();
+
+  var response = await dioObject.post(
+    uploadUrl,
+    options: Options(
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token,
+      },
+    ),
+    data: jsonEncode({'fileUrl': fileUrl}),
+  );
+
+  if (response.statusCode != 200) {
+    throw error('Error: Failed to upload from URL to WhiteCodel App Share');
+  }
+
+  var responseBody = response.data;
   return responseBody;
 }
 
