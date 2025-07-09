@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.1.19] - 2025-02-20
+## [1.1.19+1] - 2025-07-09
+
+### Fixed
+
+- Update check again and again issue fixed.
+
+## [1.1.19] - 2025-07-09
 
 ### Added
 
